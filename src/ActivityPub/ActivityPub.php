@@ -117,32 +117,32 @@ class ActivityPub
     /**
      * @throws ClientExceptionInterface
      */
-    public function getFirstPageInOrderedCollection(
-        array $orderedCollection,
+    public function getFirstPageInCollection(
+        array $collection,
         array $keyInformation = [],
     ): array {
-        if (!isset($orderedCollection['first'])) {
+        if (!isset($collection['first'])) {
             return [];
         }
 
-        return $this->signAndGetRequest($keyInformation, $orderedCollection['first']);
+        return $this->signAndGetRequest($keyInformation, $collection['first']);
     }
 
     /**
      * @throws ClientExceptionInterface
      */
-    public function getAllPagesInOrderedCollection(
-        array $orderedCollection,
+    public function getAllPagesInCollection(
+        array $collection,
         array $keyInformation = [],
         int $limit = 5,
     ): array {
-        if (!isset($orderedCollection['first'])) {
+        if (!isset($collection['first'])) {
             return [];
         }
 
         $pages = [];
 
-        $page = $this->signAndGetRequest($keyInformation, $orderedCollection['first']);
+        $page = $this->signAndGetRequest($keyInformation, $collection['first']);
         $pages[] = $page;
         $counter = 0;
 
@@ -156,6 +156,30 @@ class ActivityPub
         }
 
         return $pages;
+    }
+
+    /**
+     * @throws ClientExceptionInterface
+     */
+    public function getNextPage(array $collectionPage, array $keyInformation = []): array
+    {
+        if (!isset($collectionPage['next'])) {
+            return [];
+        }
+
+        return $this->signAndGetRequest($keyInformation, $collectionPage['next']);
+    }
+
+    /**
+     * @throws ClientExceptionInterface
+     */
+    public function getPreviousPage(array $collectionPage, array $keyInformation = []): array
+    {
+        if (!isset($collectionPage['prev'])) {
+            return [];
+        }
+
+        return $this->signAndGetRequest($keyInformation, $collectionPage['prev']);
     }
 
     /**
