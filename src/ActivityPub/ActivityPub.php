@@ -396,7 +396,7 @@ class ActivityPub
         return $data;
     }
 
-    private function buildWebfingerUrl(string $handle): string
+    public function buildWebfingerUrl(string $handle): string
     {
         if (!preg_match(
             '/^@?(?P<user>[\w\-\.]+)@(?P<host>[\w\.\-]+)(?P<port>:[\d]+)?$/',
