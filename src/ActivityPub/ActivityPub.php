@@ -115,6 +115,26 @@ class ActivityPub
     }
 
     /**
+     * AFAIK nobody really does this, but it's in the ActivityPub spec:
+     * "sharedInbox endpoints SHOULD also be publicly readable OrderedCollection objects containing
+     *  objects addressed to the Public special collection."
+     */
+    public function getActorSharedInboxCollection(
+        array $actor,
+        array $keyInformation = []
+    ): ?array {
+        if (!isset($actor['endpoints'])) {
+            return null;
+        }
+
+        if (!isset($actor['endpoints']['sharedInbox'])) {
+            return null;
+        }
+
+        return $this->signAndGetRequest($keyInformation, $actor['endpoints']['sharedInbox']);
+    }
+
+    /**
      * @throws ClientExceptionInterface
      */
     public function getFirstPageInCollection(
@@ -367,7 +387,13 @@ class ActivityPub
 
         $response = $this->client->sendRequest($request);
 
-        return json_decode($response->getBody()->getContents(), true);
+        $data = json_decode($response->getBody()->getContents(), true);
+
+        if ($response->getStatusCode() !== 200) {
+            $data['response']['status'] = $response->getStatusCode();
+        }
+
+        return $data;
     }
 
     private function buildWebfingerUrl(string $handle): string
