@@ -212,10 +212,6 @@ class ActivityPub
             return false;
         }
 
-        if (!isset($sender['publicKey']) || !isset($sender['publicKey']['publicKeyPem'])) {
-            return false;
-        }
-
         $signature = is_array($headers['signature']) ? $headers['signature'][0] : $headers['signature'];
 
         if (!$signature) {
@@ -263,6 +259,10 @@ class ActivityPub
         $sender = $this->getActor($signatureData['keyId']);
 
         if (empty($sender)) {
+            return false;
+        }
+        
+        if (!isset($sender['publicKey']) || !isset($sender['publicKey']['publicKeyPem'])) {
             return false;
         }
 
