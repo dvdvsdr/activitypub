@@ -206,8 +206,12 @@ class ActivityPub
      * borrowed a lot from dansup (pixelfed) and aaronpk (nautilus)
      * TODO properly credit also in HttpSignature
      */
-    public function verifyRequestSignature(array $headers, string $body, ?string $targetPath = null): bool
-    {
+    public function verifyRequestSignature(
+        array $headers,
+        string $body,
+        ?string $targetPath = null,
+        ?array $sender = null
+    ): bool {
         if (!array_key_exists('signature', $headers) || !array_key_exists('date', $headers)) {
             return false;
         }
@@ -256,12 +260,14 @@ class ActivityPub
             return false;
         }
 
-        $sender = $this->getActor($signatureData['keyId']);
+        if ($sender === null) {
+            $sender = $this->getActor($signatureData['keyId']);
+        }
 
         if (empty($sender)) {
             return false;
         }
-        
+
         if (!isset($sender['publicKey']) || !isset($sender['publicKey']['publicKeyPem'])) {
             return false;
         }
